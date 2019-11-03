@@ -46,6 +46,6 @@ public class UsuarioService implements UserDetailsService, IUsuarioService {
 
     @Override
     public Usuario update(final Usuario usuario, final Long id) {
-        return null;
+        return usuarioFeignClient.update(usuario, id);
     }
 }
