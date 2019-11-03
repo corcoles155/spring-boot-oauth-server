@@ -5,3 +5,4 @@ Repos que intervienen:
 - spring-boot-servicio-usuarios-commons
 - spring-boot-eureka-server
 - spring-boot-zuul-server
+- spring-boot-servicio-config-server
