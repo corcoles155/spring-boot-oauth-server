@@ -10,8 +10,11 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableAuthorizationServer
@@ -23,11 +26,14 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private AdditionalInformationToken additionalInformationToken;
+
     //Configurar los permisos que van a tener nuestros endpoints del servidor de autenticación para generar y validar el token.
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
         security.tokenKeyAccess("permitAll()") //tokenKeyAccess es el endpoint para generar el token, cualquier cliente puede acceder a esta ruta para generar el token
-        .checkTokenAccess("isAuthenticated()"); //checkTokenAccess se encarga de validar el token, isAuthenticated() nos permite validar que el cliente esté autenticado.
+                .checkTokenAccess("isAuthenticated()"); //checkTokenAccess se encarga de validar el token, isAuthenticated() nos permite validar que el cliente esté autenticado.
     }
 
     /*
@@ -55,9 +61,12 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     //Se encarga de generar el token
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints.authenticationManager(authenticationManager).accessTokenConverter(accessTokenConverter());
-        endpoints.tokenStore(tokenStore());
-        super.configure(endpoints);
+        final TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain(); //Para unir la información de los token.
+        tokenEnhancerChain.setTokenEnhancers(Arrays.asList(accessTokenConverter(), additionalInformationToken));
+        endpoints.authenticationManager(authenticationManager)
+                .accessTokenConverter(accessTokenConverter())
+                .tokenStore(tokenStore())
+                .tokenEnhancer(tokenEnhancerChain);
     }
 
     @Bean("jwtTokenStore")
@@ -65,6 +74,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         return new JwtTokenStore(accessTokenConverter());
     }
 
+    //Es la configuración por defecto del token
     @Bean("jwtAccessTokenConverter")
     public JwtAccessTokenConverter accessTokenConverter() {
         final JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();

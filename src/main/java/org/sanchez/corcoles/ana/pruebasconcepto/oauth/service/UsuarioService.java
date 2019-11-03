@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UsuarioService implements UserDetailsService {
+public class UsuarioService implements UserDetailsService, IUsuarioService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UsuarioService.class);
 
@@ -37,5 +37,10 @@ public class UsuarioService implements UserDetailsService {
         LOGGER.info("Usuario autenticado " + userName);
 
         return new User(usuario.getUserName(), usuario.getPassword(), usuario.getEnabled(), true, true, true, authorities);
+    }
+
+    @Override
+    public Usuario findByUserName(String userName) {
+        return usuarioFeignClient.findByUserName(userName);
     }
 }
