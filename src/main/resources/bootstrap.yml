@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: oauth-server
+  cloud:
+    config:
+      uri: http://localhost:8888
+
+#Para poder refrescar desde actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

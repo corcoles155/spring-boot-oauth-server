@@ -1,6 +1,7 @@
 package org.sanchez.corcoles.ana.pruebasconcepto.oauth.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,6 +30,15 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private AdditionalInformationToken additionalInformationToken;
 
+    @Value("${config.security.oauth.client.id}")
+    private String clientId;
+
+    @Value("${config.security.oauth.client.secret}")
+    private String clientSecret;
+
+    @Value("${config.security.oauth.jwt.key}")
+    private String jwtKey;
+
     //Configurar los permisos que van a tener nuestros endpoints del servidor de autenticación para generar y validar el token.
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
@@ -50,8 +60,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
-                .withClient("frontedapp") //El client_id es el identificador público de la aplicación
-                .secret(passwordEncoder.encode("12345")) //El client_secret es una contraseña o secreto que generaremos en el servidor de OAuth en relación con el cliente (la aplicación).
+                .withClient(clientId) //El client_id es el identificador público de la aplicación
+                .secret(passwordEncoder.encode(clientSecret)) //El client_secret es una contraseña o secreto que generaremos en el servidor de OAuth en relación con el cliente (la aplicación).
                 .scopes("read", "write") //El scope podría ser cualquier valor que ayude a autorizar el uso de nuestras aplicaciones.
                 .authorizedGrantTypes("password", "refresh_token") //Como vamos a obtener el token, los campos que corresponden al grant_type password son username, password, client_id, client_secret y scope
                 .accessTokenValiditySeconds(3600) //tiempo de validez del token, ponemos 1h de validez
@@ -78,7 +88,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Bean("jwtAccessTokenConverter")
     public JwtAccessTokenConverter accessTokenConverter() {
         final JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
-        jwtAccessTokenConverter.setSigningKey("codigo_secreto"); //Esto debe ser un secreto
+        jwtAccessTokenConverter.setSigningKey(jwtKey); //Esto debe ser un secreto
         return jwtAccessTokenConverter;
     }
 }
