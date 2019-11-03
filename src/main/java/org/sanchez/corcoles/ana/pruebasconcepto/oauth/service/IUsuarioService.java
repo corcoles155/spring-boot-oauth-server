@@ -5,4 +5,6 @@ import org.sanchez.corcoles.ana.pruebasconcepto.usuarios.commons.model.entity.Us
 public interface IUsuarioService {
 
     Usuario findByUserName(String userName);
+
+    Usuario update(Usuario usuario, Long id);
 }

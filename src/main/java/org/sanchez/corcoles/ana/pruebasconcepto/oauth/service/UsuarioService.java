@@ -25,7 +25,7 @@ public class UsuarioService implements UserDetailsService, IUsuarioService {
     private UsuarioFeignClient usuarioFeignClient;
 
     @Override
-    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(final String userName) throws UsernameNotFoundException {
         final Usuario usuario = usuarioFeignClient.findByUserName(userName);
 
         if (usuario == null) {
@@ -40,7 +40,12 @@ public class UsuarioService implements UserDetailsService, IUsuarioService {
     }
 
     @Override
-    public Usuario findByUserName(String userName) {
+    public Usuario findByUserName(final String userName) {
         return usuarioFeignClient.findByUserName(userName);
+    }
+
+    @Override
+    public Usuario update(final Usuario usuario, final Long id) {
+        return null;
     }
 }
