@@ -62,7 +62,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     //Se encarga de generar el token
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         final TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain(); //Para unir la información de los token.
-        tokenEnhancerChain.setTokenEnhancers(Arrays.asList(accessTokenConverter(), additionalInformationToken));
+        tokenEnhancerChain.setTokenEnhancers(Arrays.asList(additionalInformationToken, accessTokenConverter()));
         endpoints.authenticationManager(authenticationManager)
                 .accessTokenConverter(accessTokenConverter())
                 .tokenStore(tokenStore())
