@@ -23,9 +23,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private JwtAccessTokenConverter jwtAccessTokenConverter;
-
     //Configurar los permisos que van a tener nuestros endpoints del servidor de autenticación para generar y validar el token.
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
@@ -58,14 +55,14 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     //Se encarga de generar el token
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints.authenticationManager(authenticationManager).accessTokenConverter(jwtAccessTokenConverter);
+        endpoints.authenticationManager(authenticationManager).accessTokenConverter(accessTokenConverter());
         endpoints.tokenStore(tokenStore());
         super.configure(endpoints);
     }
 
     @Bean("jwtTokenStore")
     public JwtTokenStore tokenStore() {
-        return new JwtTokenStore(jwtAccessTokenConverter);
+        return new JwtTokenStore(accessTokenConverter());
     }
 
     @Bean("jwtAccessTokenConverter")
